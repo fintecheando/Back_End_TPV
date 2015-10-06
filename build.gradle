@@ -1,0 +1,94 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+apply plugin: 'mongo'
+
+project.group = 'uk.ac.surrey.com3014.group2'
+project.version = '1.0.0-milestone-1-SNAPSHOT'
+
+buildscript {
+    repositories {
+        maven { url "http://repo.spring.io/libs-release" }
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.1.8.RELEASE")
+        classpath 'com.sourcemuse.gradle.plugin:gradle-mongo-plugin:0.4.0'
+    }
+}
+
+ext {
+    springFrameworkVersion = "4.0.5.RELEASE"
+    springDataVersion = "1.6.1.RELEASE"
+    springDataMongoDBVersion = "1.5.1.RELEASE"
+    springSecurityOauth2Version = "2.0.2.RELEASE"
+    springIntegrationVersion = "4.0.2.RELEASE"
+    tomcatVersion = '7.0.11'
+    springSecurityVersion = "3.2.4.RELEASE"
+}
+
+mongo {
+	logging "console"
+	storageLocation "./mongo/data"
+}
+
+run {
+    dependsOn startManagedMongoDb
+}
+
+
+test {
+    testLogging {
+        events 'failed', 'passed'
+        exceptionFormat 'full'
+    }
+}
+
+sourceSets {
+    
+    main {
+	    java {
+            java.srcDir file('src/main/java')
+	    }
+    }
+    
+    unitTest {
+        main {
+            java {
+                java.srcDir file('test/main/java')
+            }
+        }
+    }
+}
+
+javadoc {
+	title="eBanking: RESTful API " + project.version
+}
+
+jar {
+    baseName = 'eBanking-API'
+    version =  project.version
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "http://repo.spring.io/libs-release" }
+}
+
+dependencies {    
+    compile ("org.springframework.boot:spring-boot-starter-web")
+    compile ("org.apache.tomcat.embed:tomcat-embed-jasper")
+    compile ("org.springframework.data:spring-data-mongodb")
+    compile "org.springframework.security:spring-security-core:${springSecurityVersion}"
+    compile ("org.springframework.security.oauth:spring-security-oauth2:2.0.3.RELEASE")
+    compile "org.springframework.integration:spring-integration-core:${springIntegrationVersion}"
+    testCompile (group: 'junit', name: 'junit', version: '4.+')
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.1'
+}
